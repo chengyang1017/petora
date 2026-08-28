@@ -7,11 +7,15 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.chengyang.petora.core.places.PetoraPlaces
+import com.chengyang.petora.feature.map.data.GooglePlaceRepository
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
@@ -19,9 +23,23 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
 
 @Composable
-fun MapScreen(
-    viewModel: MapViewModel = viewModel(),
-) {
+fun MapScreen() {
+    val context = LocalContext.current
+
+    val factory = remember {
+        MapViewModelFactory(
+            placeRepository = GooglePlaceRepository(
+                placesClient = PetoraPlaces.createClient(
+                    context = context,
+                ),
+            ),
+        )
+    }
+
+    val viewModel: MapViewModel = viewModel(
+        factory = factory,
+    )
+
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     val cameraPositionState =

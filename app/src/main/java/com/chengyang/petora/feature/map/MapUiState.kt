@@ -7,4 +7,6 @@ data class MapUiState(
         3.1390,
         101.6869,
     ),
+    val selectedPlaceName: String? = null,
+    val isLoadingPlace: Boolean = false,
 )
