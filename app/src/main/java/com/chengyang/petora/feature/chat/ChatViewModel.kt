@@ -27,7 +27,7 @@ class ChatViewModel(
 
     private var currentPlaceContext: PlaceContext? = null
 
-    private var hasStartedPlaceExploration = false
+    private var startedPlaceContext: PlaceContext? = null
 
     fun setPlaceContext(
         placeContext: PlaceContext?,
@@ -38,12 +38,22 @@ class ChatViewModel(
     fun startPlaceExploration(
         placeContext: PlaceContext,
     ) {
-        if (hasStartedPlaceExploration) {
+        if (startedPlaceContext == placeContext) {
             return
         }
 
-        hasStartedPlaceExploration = true
+        startedPlaceContext = placeContext
         currentPlaceContext = placeContext
+
+        previousResponseId = null
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                messages = emptyList(),
+                input = "",
+                errorMessage = null,
+            )
+        }
 
         requestReply(
             message = "Give me a short, friendly introduction to this place and tell me what makes it interesting.",
