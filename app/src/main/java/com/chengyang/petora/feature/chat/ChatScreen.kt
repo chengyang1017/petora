@@ -68,6 +68,15 @@ private fun ChatScreenContent(
                     message = message,
                 )
             }
+
+            if (state.isLoading) {
+                item {
+                    Text(
+                        text = "Momo is thinking...",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+            }
         }
 
         Row(
@@ -94,6 +103,7 @@ private fun ChatScreenContent(
 
             Button(
                 onClick = onSendClick,
+                enabled = !state.isLoading,
                 modifier = Modifier.padding(start = 8.dp),
             ) {
                 Text("Send")

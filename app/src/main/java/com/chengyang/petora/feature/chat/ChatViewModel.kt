@@ -1,9 +1,12 @@
 package com.chengyang.petora.feature.chat
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class ChatViewModel : ViewModel() {
 
@@ -28,6 +31,10 @@ class ChatViewModel : ViewModel() {
             return
         }
 
+        if (_uiState.value.isLoading) {
+            return
+        }
+
         _uiState.update { currentState ->
             currentState.copy(
                 messages = currentState.messages + ChatMessage(
@@ -35,7 +42,22 @@ class ChatViewModel : ViewModel() {
                     isFromUser = true,
                 ),
                 input = "",
+                isLoading = true,
             )
+        }
+
+        viewModelScope.launch {
+            delay(1000)
+
+            _uiState.update { currentState ->
+                currentState.copy(
+                    messages = currentState.messages + ChatMessage(
+                        text = "Woof! You said: $message",
+                        isFromUser = false,
+                    ),
+                    isLoading = false,
+                )
+            }
         }
     }
 }
