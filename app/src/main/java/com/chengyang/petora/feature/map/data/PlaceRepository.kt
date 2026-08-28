@@ -7,4 +7,8 @@ interface PlaceRepository {
     suspend fun getPlaceName(
         location: LatLng,
     ): String?
+
+    suspend fun searchPlaces(
+        query: String,
+    ): List<PlaceSearchResult>
 }

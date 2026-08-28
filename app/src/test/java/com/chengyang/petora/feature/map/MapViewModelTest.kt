@@ -2,6 +2,7 @@ package com.chengyang.petora.feature.map
 
 import com.chengyang.petora.MainDispatcherRule
 import com.chengyang.petora.feature.map.data.PlaceRepository
+import com.chengyang.petora.feature.map.data.PlaceSearchResult
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -116,5 +117,11 @@ private class FakePlaceRepository(
         requestCount += 1
 
         return placeName
+    }
+
+    override suspend fun searchPlaces(
+        query: String,
+    ): List<PlaceSearchResult> {
+        return emptyList()
     }
 }
