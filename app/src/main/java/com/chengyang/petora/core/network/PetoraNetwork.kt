@@ -11,7 +11,7 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 object PetoraNetwork {
 
     private const val BASE_URL =
-        "http://10.0.2.2:3000/"
+        "http://127.0.0.1:3000/"
 
     private val json = Json {
         ignoreUnknownKeys = true

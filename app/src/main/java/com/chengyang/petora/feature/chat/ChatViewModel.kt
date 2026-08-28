@@ -2,8 +2,9 @@ package com.chengyang.petora.feature.chat
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chengyang.petora.core.network.PetoraNetwork
 import com.chengyang.petora.feature.chat.data.ChatRepository
-import com.chengyang.petora.feature.chat.data.FakeChatRepository
+import com.chengyang.petora.feature.chat.data.RemoteChatRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,7 +12,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ChatViewModel(
-    private val chatRepository: ChatRepository = FakeChatRepository(),
+    private val chatRepository: ChatRepository = RemoteChatRepository(
+        chatApi = PetoraNetwork.chatApi,
+    ),
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
