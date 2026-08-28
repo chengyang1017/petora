@@ -19,7 +19,9 @@ class MapViewModelTest {
 
     @Test
     fun `selectLocation updates selected location and place name`() = runTest {
-        val repository = FakePlaceRepository()
+        val repository = FakePlaceRepository(
+            placeName = "Petronas Twin Towers",
+        )
 
         val viewModel = MapViewModel(
             placeRepository = repository,
@@ -51,14 +53,68 @@ class MapViewModelTest {
         assertFalse(
             state.isLoadingPlace,
         )
+
+        assertEquals(
+            1,
+            repository.requestCount,
+        )
+    }
+
+    @Test
+    fun `selectPlace uses POI directly without place lookup`() {
+        val repository = FakePlaceRepository(
+            placeName = "Should not be used",
+        )
+
+        val viewModel = MapViewModel(
+            placeRepository = repository,
+        )
+
+        val location = LatLng(
+            3.1478,
+            101.6953,
+        )
+
+        viewModel.selectPlace(
+            name = "Central Market",
+            location = location,
+        )
+
+        val state = viewModel.uiState.value
+
+        assertEquals(
+            location,
+            state.selectedLocation,
+        )
+
+        assertEquals(
+            "Central Market",
+            state.selectedPlaceName,
+        )
+
+        assertFalse(
+            state.isLoadingPlace,
+        )
+
+        assertEquals(
+            0,
+            repository.requestCount,
+        )
     }
 }
 
-private class FakePlaceRepository : PlaceRepository {
+private class FakePlaceRepository(
+    private val placeName: String?,
+) : PlaceRepository {
+
+    var requestCount = 0
+        private set
 
     override suspend fun getPlaceName(
         location: LatLng,
-    ): String {
-        return "Petronas Twin Towers"
+    ): String? {
+        requestCount += 1
+
+        return placeName
     }
 }
