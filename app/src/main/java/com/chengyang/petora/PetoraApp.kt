@@ -1,11 +1,14 @@
 package com.chengyang.petora
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.navigation.compose.rememberNavController
+import com.chengyang.petora.navigation.PetoraNavHost
 
 @Composable
 fun PetoraApp() {
-    Text(
-        text = "Petora"
+    val navController = rememberNavController()
+
+    PetoraNavHost(
+        navController = navController,
     )
 }
