@@ -9,6 +9,10 @@ class FakeChatRepository : ChatRepository {
     ): String {
         delay(1000)
 
+        if (message == "/error") {
+            throw IllegalStateException("Fake AI request failed")
+        }
+
         return "Woof! You said: $message"
     }
 }

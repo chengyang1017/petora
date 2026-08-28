@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chengyang.petora.feature.chat.data.ChatRepository
 import com.chengyang.petora.feature.chat.data.FakeChatRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -46,22 +47,34 @@ class ChatViewModel(
                 ),
                 input = "",
                 isLoading = true,
+                errorMessage = null,
             )
         }
 
         viewModelScope.launch {
-            val reply = chatRepository.getReply(
-                message = message,
-            )
-
-            _uiState.update { currentState ->
-                currentState.copy(
-                    messages = currentState.messages + ChatMessage(
-                        text = reply,
-                        isFromUser = false,
-                    ),
-                    isLoading = false,
+            try {
+                val reply = chatRepository.getReply(
+                    message = message,
                 )
+
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        messages = currentState.messages + ChatMessage(
+                            text = reply,
+                            isFromUser = false,
+                        ),
+                        isLoading = false,
+                    )
+                }
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (exception: Exception) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        isLoading = false,
+                        errorMessage = "Something went wrong. Please try again.",
+                    )
+                }
             }
         }
     }

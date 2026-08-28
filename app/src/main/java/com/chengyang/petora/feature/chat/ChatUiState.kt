@@ -4,4 +4,5 @@ data class ChatUiState(
     val messages: List<ChatMessage> = emptyList(),
     val input: String = "",
     val isLoading: Boolean = false,
+    val errorMessage: String? = null,
 )
