@@ -2,13 +2,16 @@ package com.chengyang.petora.feature.chat
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
+import com.chengyang.petora.feature.chat.data.ChatRepository
+import com.chengyang.petora.feature.chat.data.FakeChatRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ChatViewModel : ViewModel() {
+class ChatViewModel(
+    private val chatRepository: ChatRepository = FakeChatRepository(),
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
         ChatUiState()
@@ -19,7 +22,7 @@ class ChatViewModel : ViewModel() {
     fun onInputChanged(value: String) {
         _uiState.update { currentState ->
             currentState.copy(
-                input = value
+                input = value,
             )
         }
     }
@@ -47,12 +50,14 @@ class ChatViewModel : ViewModel() {
         }
 
         viewModelScope.launch {
-            delay(1000)
+            val reply = chatRepository.getReply(
+                message = message,
+            )
 
             _uiState.update { currentState ->
                 currentState.copy(
                     messages = currentState.messages + ChatMessage(
-                        text = "Woof! You said: $message",
+                        text = reply,
                         isFromUser = false,
                     ),
                     isLoading = false,
