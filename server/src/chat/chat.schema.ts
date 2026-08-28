@@ -17,6 +17,14 @@ export const chatRequestSchema = z.object({
     .trim()
     .min(1)
     .optional(),
+
+   place: z
+     .object({
+       name: z.string().trim().min(1),
+       latitude: z.number(),
+       longitude: z.number(),
+     })
+     .optional(),
 });
 
 export type ChatRequest = z.infer<

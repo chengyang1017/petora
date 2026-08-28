@@ -25,6 +25,7 @@ chatRouter.post(
       message,
       petId,
       previousResponseId,
+      place,
     } = result.data;
 
     try {
@@ -32,6 +33,7 @@ chatRouter.post(
         message,
         petId,
         previousResponseId,
+        place,
       });
 
       response.json({

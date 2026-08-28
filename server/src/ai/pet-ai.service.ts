@@ -10,6 +10,11 @@ type GeneratePetReplyInput = {
   message: string;
   petId: string;
   previousResponseId?: string;
+  place?: {
+    name: string;
+    latitude: number;
+    longitude: number;
+  };
 };
 
 type GeneratePetReplyResult = {
@@ -20,6 +25,17 @@ type GeneratePetReplyResult = {
 export async function generatePetReply(
   input: GeneratePetReplyInput,
 ): Promise<GeneratePetReplyResult> {
+  const userMessage = input.place
+    ? [
+        input.message,
+        '',
+        'Current place context:',
+        `Name: ${input.place.name}`,
+        `Latitude: ${input.place.latitude}`,
+        `Longitude: ${input.place.longitude}`,
+      ].join('\n')
+    : input.message;
+
   const response = await openai.responses.create({
     model: env.OPENAI_MODEL,
 
@@ -38,7 +54,7 @@ Your role:
 Your pet id is: ${input.petId}.
     `.trim(),
 
-    input: input.message,
+    input: userMessage,
 
     ...(input.previousResponseId
       ? {
