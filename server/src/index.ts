@@ -2,10 +2,9 @@ import cors from 'cors';
 import express from 'express';
 
 import { chatRouter } from './chat/chat.router.js';
+import { env } from './config/env.js';
 
 const app = express();
-
-const PORT = 3000;
 
 app.use(cors());
 
@@ -30,10 +29,10 @@ app.use(
 );
 
 app.listen(
-  PORT,
+  env.PORT,
   () => {
     console.log(
-      `Petora API running on http://localhost:${PORT}`,
+      `Petora API running on http://localhost:${env.PORT}`,
     );
   },
 );
