@@ -20,6 +20,16 @@ class MapViewModel(
 
     val uiState: StateFlow<MapUiState> = _uiState
 
+    fun onSearchQueryChanged(
+        value: String,
+    ) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                searchQuery = value,
+            )
+        }
+    }
+
     fun selectLocation(
         location: LatLng,
     ) {

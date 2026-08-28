@@ -3,9 +3,11 @@ package com.chengyang.petora.feature.map
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -85,65 +87,83 @@ fun MapScreen(
             )
         }
 
-        Card(
+        Column(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(16.dp),
         ) {
-            Column(
-                modifier = Modifier.padding(12.dp),
-            ) {
-                when {
-                    state.isLoadingPlace -> {
-                        Text(
-                            text = "Finding this place...",
-                        )
-                    }
-
-                    state.selectedPlaceName != null -> {
-                        Text(
-                            text = state.selectedPlaceName!!,
-                        )
-                    }
-
-                    else -> {
-                        Text(
-                            text = "No place found",
-                        )
-                    }
-                }
-
-                Text(
-                    text = "Latitude: ${state.selectedLocation.latitude}",
-                    modifier = Modifier.padding(top = 8.dp),
-                )
-
-                Text(
-                    text = "Longitude: ${state.selectedLocation.longitude}",
-                )
-
-                Button(
-                    onClick = {
-                        val placeName =
-                            state.selectedPlaceName
-                                ?: return@Button
-
-                        onAskMomoClick(
-                            PlaceContext(
-                                name = placeName,
-                                latitude = state.selectedLocation.latitude,
-                                longitude = state.selectedLocation.longitude,
-                            ),
-                        )
-                    },
-                    enabled =
-                        state.selectedPlaceName != null &&
-                                !state.isLoadingPlace,
-                    modifier = Modifier.padding(top = 12.dp),
-                ) {
+            OutlinedTextField(
+                value = state.searchQuery,
+                onValueChange = viewModel::onSearchQueryChanged,
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = {
                     Text(
-                        text = "Ask Momo",
+                        text = "Search places...",
                     )
+                },
+                singleLine = true,
+            )
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+            ) {
+                Column(
+                    modifier = Modifier.padding(12.dp),
+                ) {
+                    when {
+                        state.isLoadingPlace -> {
+                            Text(
+                                text = "Finding this place...",
+                            )
+                        }
+
+                        state.selectedPlaceName != null -> {
+                            Text(
+                                text = state.selectedPlaceName!!,
+                            )
+                        }
+
+                        else -> {
+                            Text(
+                                text = "No place found",
+                            )
+                        }
+                    }
+
+                    Text(
+                        text = "Latitude: ${state.selectedLocation.latitude}",
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+
+                    Text(
+                        text = "Longitude: ${state.selectedLocation.longitude}",
+                    )
+
+                    Button(
+                        onClick = {
+                            val placeName =
+                                state.selectedPlaceName
+                                    ?: return@Button
+
+                            onAskMomoClick(
+                                PlaceContext(
+                                    name = placeName,
+                                    latitude = state.selectedLocation.latitude,
+                                    longitude = state.selectedLocation.longitude,
+                                ),
+                            )
+                        },
+                        enabled =
+                            state.selectedPlaceName != null &&
+                                    !state.isLoadingPlace,
+                        modifier = Modifier.padding(top = 12.dp),
+                    ) {
+                        Text(
+                            text = "Ask Momo",
+                        )
+                    }
                 }
             }
         }

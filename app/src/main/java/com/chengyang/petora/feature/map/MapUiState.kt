@@ -9,4 +9,6 @@ data class MapUiState(
     ),
     val selectedPlaceName: String? = null,
     val isLoadingPlace: Boolean = false,
+
+    val searchQuery: String = "",
 )
