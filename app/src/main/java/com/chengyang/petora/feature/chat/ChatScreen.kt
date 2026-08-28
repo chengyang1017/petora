@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,8 +29,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun ChatScreen(
+    placeContext: PlaceContext? = null,
     viewModel: ChatViewModel = viewModel(),
 ) {
+    LaunchedEffect(placeContext) {
+        viewModel.setPlaceContext(
+            placeContext = placeContext,
+        )
+    }
+
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     ChatScreenContent(

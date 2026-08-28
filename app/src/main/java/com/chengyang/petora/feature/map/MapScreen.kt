@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.chengyang.petora.core.places.PetoraPlaces
+import com.chengyang.petora.feature.chat.PlaceContext
 import com.chengyang.petora.feature.map.data.GooglePlaceRepository
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.compose.GoogleMap
@@ -24,7 +26,9 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
 
 @Composable
-fun MapScreen() {
+fun MapScreen(
+    onAskMomoClick: (PlaceContext) -> Unit,
+) {
     val context = LocalContext.current
 
     val factory = remember {
@@ -111,6 +115,30 @@ fun MapScreen() {
                 Text(
                     text = "Longitude: ${state.selectedLocation.longitude}",
                 )
+
+                Button(
+                    onClick = {
+                        val placeName =
+                            state.selectedPlaceName
+                                ?: return@Button
+
+                        onAskMomoClick(
+                            PlaceContext(
+                                name = placeName,
+                                latitude = state.selectedLocation.latitude,
+                                longitude = state.selectedLocation.longitude,
+                            ),
+                        )
+                    },
+                    enabled =
+                        state.selectedPlaceName != null &&
+                                !state.isLoadingPlace,
+                    modifier = Modifier.padding(top = 12.dp),
+                ) {
+                    Text(
+                        text = "Ask Momo",
+                    )
+                }
             }
         }
     }
