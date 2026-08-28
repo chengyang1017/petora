@@ -25,6 +25,8 @@ class MapViewModel(
 
     private var searchJob: Job? = null
 
+    private var searchRequestId = 0L
+
     fun onSearchQueryChanged(
         value: String,
     ) {
@@ -36,6 +38,9 @@ class MapViewModel(
 
         searchJob?.cancel()
 
+        searchRequestId += 1
+
+        val requestId = searchRequestId
         val query = value.trim()
 
         if (query.isEmpty()) {
@@ -54,6 +59,7 @@ class MapViewModel(
 
             performSearch(
                 query = query,
+                requestId = requestId,
             )
         }
     }
@@ -61,6 +67,9 @@ class MapViewModel(
     fun searchPlaces() {
         searchJob?.cancel()
 
+        searchRequestId += 1
+
+        val requestId = searchRequestId
         val query = _uiState.value.searchQuery.trim()
 
         if (query.isEmpty()) {
@@ -77,12 +86,14 @@ class MapViewModel(
         searchJob = viewModelScope.launch {
             performSearch(
                 query = query,
+                requestId = requestId,
             )
         }
     }
 
     private suspend fun performSearch(
         query: String,
+        requestId: Long,
     ) {
         _uiState.update { currentState ->
             currentState.copy(
@@ -96,6 +107,10 @@ class MapViewModel(
                 query = query,
             )
 
+            if (requestId != searchRequestId) {
+                return
+            }
+
             _uiState.update { currentState ->
                 currentState.copy(
                     searchResults = results,
@@ -105,6 +120,10 @@ class MapViewModel(
         } catch (exception: CancellationException) {
             throw exception
         } catch (exception: Exception) {
+            if (requestId != searchRequestId) {
+                return
+            }
+
             _uiState.update { currentState ->
                 currentState.copy(
                     searchResults = emptyList(),
@@ -118,6 +137,8 @@ class MapViewModel(
         result: PlaceSearchResult,
     ) {
         searchJob?.cancel()
+
+        searchRequestId += 1
 
         _uiState.update { currentState ->
             currentState.copy(

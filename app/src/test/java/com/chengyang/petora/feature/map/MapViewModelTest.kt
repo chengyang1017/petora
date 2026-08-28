@@ -5,10 +5,13 @@ import com.chengyang.petora.feature.map.data.PlaceRepository
 import com.chengyang.petora.feature.map.data.PlaceSearchResult
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Rule
@@ -141,6 +144,47 @@ class MapViewModelTest {
             repository.searchQueries,
         )
     }
+
+    @Test
+    fun `stale search result does not overwrite latest result`() = runTest {
+        val repository = StaleSearchRepository()
+
+        val viewModel = MapViewModel(
+            placeRepository = repository,
+        )
+
+        viewModel.onSearchQueryChanged(
+            "Pet",
+        )
+
+        advanceTimeBy(500)
+        runCurrent()
+
+        viewModel.onSearchQueryChanged(
+            "Petronas",
+        )
+
+        advanceTimeBy(500)
+        runCurrent()
+
+        assertEquals(
+            "Petronas Twin Towers",
+            viewModel.uiState.value
+                .searchResults
+                .first()
+                .name,
+        )
+
+        advanceUntilIdle()
+
+        assertEquals(
+            "Petronas Twin Towers",
+            viewModel.uiState.value
+                .searchResults
+                .first()
+                .name,
+        )
+    }
 }
 
 private class FakePlaceRepository(
@@ -167,5 +211,45 @@ private class FakePlaceRepository(
         searchQueries += query
 
         return emptyList()
+    }
+}
+
+private class StaleSearchRepository :
+    PlaceRepository {
+
+    override suspend fun getPlaceName(
+        location: LatLng,
+    ): String? {
+        return null
+    }
+
+    override suspend fun searchPlaces(
+        query: String,
+    ): List<PlaceSearchResult> {
+        if (query == "Pet") {
+            withContext(NonCancellable) {
+                delay(1_000)
+            }
+
+            return listOf(
+                PlaceSearchResult(
+                    name = "Old Pet Result",
+                    location = LatLng(
+                        1.0,
+                        1.0,
+                    ),
+                ),
+            )
+        }
+
+        return listOf(
+            PlaceSearchResult(
+                name = "Petronas Twin Towers",
+                location = LatLng(
+                    3.1579,
+                    101.7123,
+                ),
+            ),
+        )
     }
 }
