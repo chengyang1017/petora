@@ -71,6 +71,12 @@ fun MapScreen(
                     location = location,
                 )
             },
+            onPOIClick = { poi ->
+                viewModel.selectPlace(
+                    name = poi.name,
+                    location = poi.latLng,
+                )
+            },
         ) {
             Marker(
                 state = markerState,

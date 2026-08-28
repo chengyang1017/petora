@@ -55,4 +55,17 @@ class MapViewModel(
             }
         }
     }
+
+    fun selectPlace(
+        name: String,
+        location: LatLng,
+    ) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                selectedLocation = location,
+                selectedPlaceName = name,
+                isLoadingPlace = false,
+            )
+        }
+    }
 }
