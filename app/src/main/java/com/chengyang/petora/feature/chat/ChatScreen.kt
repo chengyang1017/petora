@@ -46,6 +46,7 @@ fun ChatScreen(
 
     ChatScreenContent(
         state = state,
+        placeContext = placeContext,
         onInputChanged = viewModel::onInputChanged,
         onSendClick = viewModel::sendMessage,
     )
@@ -54,6 +55,7 @@ fun ChatScreen(
 @Composable
 private fun ChatScreenContent(
     state: ChatUiState,
+    placeContext: PlaceContext?,
     onInputChanged: (String) -> Unit,
     onSendClick: () -> Unit,
 ) {
@@ -67,6 +69,29 @@ private fun ChatScreenContent(
             text = "Chat with Momo",
             style = MaterialTheme.typography.headlineSmall,
         )
+
+        if (placeContext != null) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp),
+            ) {
+                Column(
+                    modifier = Modifier.padding(12.dp),
+                ) {
+                    Text(
+                        text = "Exploring",
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+
+                    Text(
+                        text = placeContext.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                }
+            }
+        }
 
         LazyColumn(
             modifier = Modifier
