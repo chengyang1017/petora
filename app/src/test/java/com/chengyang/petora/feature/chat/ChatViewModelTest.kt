@@ -161,6 +161,7 @@ private class SuccessChatRepository : ChatRepository {
     override suspend fun getReply(
         message: String,
         previousResponseId: String?,
+        placeContext: PlaceContext?,
     ): ChatReply {
         return ChatReply(
             text = "Momo reply: $message",
@@ -174,6 +175,7 @@ private class ErrorChatRepository : ChatRepository {
     override suspend fun getReply(
         message: String,
         previousResponseId: String?,
+        placeContext: PlaceContext?,
     ): ChatReply {
         throw IllegalStateException(
             "Fake repository failure"
@@ -191,6 +193,7 @@ private class RecordingChatRepository : ChatRepository {
     override suspend fun getReply(
         message: String,
         previousResponseId: String?,
+        placeContext: PlaceContext?,
     ): ChatReply {
         receivedPreviousResponseIds +=
             previousResponseId

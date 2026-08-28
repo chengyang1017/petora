@@ -25,6 +25,14 @@ class ChatViewModel(
 
     private var previousResponseId: String? = null
 
+    private var currentPlaceContext: PlaceContext? = null
+
+    fun setPlaceContext(
+        placeContext: PlaceContext?,
+    ) {
+        currentPlaceContext = placeContext
+    }
+
     fun onInputChanged(value: String) {
         _uiState.update { currentState ->
             currentState.copy(
@@ -61,6 +69,7 @@ class ChatViewModel(
                 val reply = chatRepository.getReply(
                     message = message,
                     previousResponseId = previousResponseId,
+                    placeContext = currentPlaceContext,
                 )
 
                 previousResponseId = reply.responseId
