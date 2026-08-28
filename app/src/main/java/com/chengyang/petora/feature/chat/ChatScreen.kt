@@ -22,6 +22,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -143,12 +147,76 @@ private fun ChatMessageItem(
     ) {
         Card {
             Text(
-                text = message.text,
+                text = if (message.isFromUser) {
+                    AnnotatedString(message.text)
+                } else {
+                    parseBoldMarkdown(
+                        text = message.text,
+                    )
+                },
                 modifier = Modifier.padding(
                     horizontal = 16.dp,
                     vertical = 10.dp,
                 ),
             )
+        }
+    }
+}
+
+private fun parseBoldMarkdown(
+    text: String,
+): AnnotatedString {
+    return buildAnnotatedString {
+        var currentIndex = 0
+
+        while (currentIndex < text.length) {
+            val boldStart = text.indexOf(
+                "**",
+                startIndex = currentIndex,
+            )
+
+            if (boldStart == -1) {
+                append(
+                    text.substring(currentIndex)
+                )
+                break
+            }
+
+            append(
+                text.substring(
+                    currentIndex,
+                    boldStart,
+                )
+            )
+
+            val boldEnd = text.indexOf(
+                "**",
+                startIndex = boldStart + 2,
+            )
+
+            if (boldEnd == -1) {
+                append(
+                    text.substring(boldStart)
+                )
+                break
+            }
+
+            pushStyle(
+                SpanStyle(
+                    fontWeight = FontWeight.Bold,
+                )
+            )
+
+            append(
+                text.substring(
+                    boldStart + 2,
+                    boldEnd,
+                )
+            )
+
+            pop()
+
+            currentIndex = boldEnd + 2
         }
     }
 }
