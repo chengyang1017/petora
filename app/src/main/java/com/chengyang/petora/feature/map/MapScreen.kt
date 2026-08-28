@@ -2,6 +2,10 @@ package com.chengyang.petora.feature.map
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -17,6 +21,10 @@ fun MapScreen() {
         101.6869,
     )
 
+    var selectedLocation by remember {
+        mutableStateOf(kualaLumpur)
+    }
+
     val cameraPositionState =
         rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(
@@ -25,19 +33,20 @@ fun MapScreen() {
             )
         }
 
-    val markerState =
-        rememberUpdatedMarkerState(
-            position = kualaLumpur,
-        )
+    val markerState = rememberUpdatedMarkerState(
+        position = selectedLocation,
+    )
 
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
+        onMapClick = { location ->
+            selectedLocation = location
+        },
     ) {
         Marker(
             state = markerState,
-            title = "Kuala Lumpur",
-            snippet = "Petora starts exploring here!",
+            title = "Selected location",
         )
     }
 }
