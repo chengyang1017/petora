@@ -11,6 +11,12 @@ export const chatRequestSchema = z.object({
     .string()
     .trim()
     .min(1),
+
+  previousResponseId: z
+    .string()
+    .trim()
+    .min(1)
+    .optional(),
 });
 
 export type ChatRequest = z.infer<

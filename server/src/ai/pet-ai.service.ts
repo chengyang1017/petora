@@ -9,11 +9,17 @@ const openai = new OpenAI({
 type GeneratePetReplyInput = {
   message: string;
   petId: string;
+  previousResponseId?: string;
+};
+
+type GeneratePetReplyResult = {
+  reply: string;
+  responseId: string;
 };
 
 export async function generatePetReply(
   input: GeneratePetReplyInput,
-): Promise<string> {
+): Promise<GeneratePetReplyResult> {
   const response = await openai.responses.create({
     model: env.OPENAI_MODEL,
 
@@ -24,14 +30,22 @@ Your role:
 - Talk naturally with the user about almost anything.
 - Be warm, curious, playful, and concise.
 - You are a companion, not a formal assistant.
+- Remember relevant information from the current conversation.
 - Do not pretend to know the user's current location unless location context is provided.
 - If the user asks about a place and no place context is available, ask which place they mean.
-- When place information is provided in the future, help the user explore and understand it.
+- When place information is provided, help the user explore and understand it.
 
 Your pet id is: ${input.petId}.
     `.trim(),
 
     input: input.message,
+
+    ...(input.previousResponseId
+      ? {
+          previous_response_id:
+            input.previousResponseId,
+        }
+      : {}),
   });
 
   const reply = response.output_text.trim();
@@ -42,5 +56,8 @@ Your pet id is: ${input.petId}.
     );
   }
 
-  return reply;
+  return {
+    reply,
+    responseId: response.id,
+  };
 }

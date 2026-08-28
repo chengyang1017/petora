@@ -24,16 +24,19 @@ chatRouter.post(
     const {
       message,
       petId,
+      previousResponseId,
     } = result.data;
 
     try {
-      const reply = await generatePetReply({
+      const aiResult = await generatePetReply({
         message,
         petId,
+        previousResponseId,
       });
 
       response.json({
-        reply,
+        reply: aiResult.reply,
+        responseId: aiResult.responseId,
       });
     } catch (error) {
       console.error(
