@@ -15,4 +15,5 @@ data class MapUiState(
     val searchResults: List<PlaceSearchResult> = emptyList(),
     val isSearching: Boolean = false,
     val hasSearchCompleted: Boolean = false,
+    val searchErrorMessage: String? = null,
 )

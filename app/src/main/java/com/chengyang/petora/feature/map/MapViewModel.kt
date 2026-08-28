@@ -34,6 +34,7 @@ class MapViewModel(
             currentState.copy(
                 searchQuery = value,
                 hasSearchCompleted = false,
+                searchErrorMessage = null,
             )
         }
 
@@ -50,6 +51,7 @@ class MapViewModel(
                     searchResults = emptyList(),
                     isSearching = false,
                     hasSearchCompleted = false,
+                    searchErrorMessage = null,
                 )
             }
 
@@ -80,6 +82,7 @@ class MapViewModel(
                     searchResults = emptyList(),
                     isSearching = false,
                     hasSearchCompleted = false,
+                    searchErrorMessage = null,
                 )
             }
 
@@ -103,6 +106,7 @@ class MapViewModel(
                 isSearching = true,
                 searchResults = emptyList(),
                 hasSearchCompleted = false,
+                searchErrorMessage = null,
             )
         }
 
@@ -120,6 +124,7 @@ class MapViewModel(
                     searchResults = results,
                     isSearching = false,
                     hasSearchCompleted = true,
+                    searchErrorMessage = null,
                 )
             }
         } catch (exception: CancellationException) {
@@ -134,6 +139,7 @@ class MapViewModel(
                     searchResults = emptyList(),
                     isSearching = false,
                     hasSearchCompleted = true,
+                    searchErrorMessage = "Search failed. Try again.",
                 )
             }
         }
@@ -154,6 +160,7 @@ class MapViewModel(
                 searchResults = emptyList(),
                 isSearching = false,
                 hasSearchCompleted = false,
+                searchErrorMessage = null,
                 isLoadingPlace = false,
             )
         }
