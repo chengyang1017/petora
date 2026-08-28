@@ -37,9 +37,15 @@ fun ChatScreen(
     viewModel: ChatViewModel = viewModel(),
 ) {
     LaunchedEffect(placeContext) {
-        viewModel.setPlaceContext(
-            placeContext = placeContext,
-        )
+        if (placeContext != null) {
+            viewModel.startPlaceExploration(
+                placeContext = placeContext,
+            )
+        } else {
+            viewModel.setPlaceContext(
+                placeContext = null,
+            )
+        }
     }
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()

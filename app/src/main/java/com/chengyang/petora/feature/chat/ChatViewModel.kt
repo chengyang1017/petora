@@ -27,10 +27,28 @@ class ChatViewModel(
 
     private var currentPlaceContext: PlaceContext? = null
 
+    private var hasStartedPlaceExploration = false
+
     fun setPlaceContext(
         placeContext: PlaceContext?,
     ) {
         currentPlaceContext = placeContext
+    }
+
+    fun startPlaceExploration(
+        placeContext: PlaceContext,
+    ) {
+        if (hasStartedPlaceExploration) {
+            return
+        }
+
+        hasStartedPlaceExploration = true
+        currentPlaceContext = placeContext
+
+        requestReply(
+            message = "Give me a short, friendly introduction to this place and tell me what makes it interesting.",
+            showUserMessage = false,
+        )
     }
 
     fun onInputChanged(value: String) {
@@ -48,17 +66,35 @@ class ChatViewModel(
             return
         }
 
+        requestReply(
+            message = message,
+            showUserMessage = true,
+        )
+    }
+
+    private fun requestReply(
+        message: String,
+        showUserMessage: Boolean,
+    ) {
         if (_uiState.value.isLoading) {
             return
         }
 
         _uiState.update { currentState ->
             currentState.copy(
-                messages = currentState.messages + ChatMessage(
-                    text = message,
-                    isFromUser = true,
-                ),
-                input = "",
+                messages = if (showUserMessage) {
+                    currentState.messages + ChatMessage(
+                        text = message,
+                        isFromUser = true,
+                    )
+                } else {
+                    currentState.messages
+                },
+                input = if (showUserMessage) {
+                    ""
+                } else {
+                    currentState.input
+                },
                 isLoading = true,
                 errorMessage = null,
             )
