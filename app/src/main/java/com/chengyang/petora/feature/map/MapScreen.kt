@@ -1,6 +1,7 @@
 package com.chengyang.petora.feature.map
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
@@ -69,7 +70,8 @@ fun MapScreen() {
         ) {
             Marker(
                 state = markerState,
-                title = "Selected location",
+                title = state.selectedPlaceName
+                    ?: "Selected location",
             )
         }
 
@@ -78,13 +80,38 @@ fun MapScreen() {
                 .align(Alignment.TopCenter)
                 .padding(16.dp),
         ) {
-            Text(
-                text = """
-                    Latitude: ${state.selectedLocation.latitude}
-                    Longitude: ${state.selectedLocation.longitude}
-                """.trimIndent(),
+            Column(
                 modifier = Modifier.padding(12.dp),
-            )
+            ) {
+                when {
+                    state.isLoadingPlace -> {
+                        Text(
+                            text = "Finding this place...",
+                        )
+                    }
+
+                    state.selectedPlaceName != null -> {
+                        Text(
+                            text = state.selectedPlaceName!!,
+                        )
+                    }
+
+                    else -> {
+                        Text(
+                            text = "No place found",
+                        )
+                    }
+                }
+
+                Text(
+                    text = "Latitude: ${state.selectedLocation.latitude}",
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+
+                Text(
+                    text = "Longitude: ${state.selectedLocation.longitude}",
+                )
+            }
         }
     }
 }
