@@ -23,6 +23,8 @@ class ChatViewModel(
 
     val uiState: StateFlow<ChatUiState> = _uiState
 
+    private var previousResponseId: String? = null
+
     fun onInputChanged(value: String) {
         _uiState.update { currentState ->
             currentState.copy(
@@ -58,12 +60,15 @@ class ChatViewModel(
             try {
                 val reply = chatRepository.getReply(
                     message = message,
+                    previousResponseId = previousResponseId,
                 )
+
+                previousResponseId = reply.responseId
 
                 _uiState.update { currentState ->
                     currentState.copy(
                         messages = currentState.messages + ChatMessage(
-                            text = reply,
+                            text = reply.text,
                             isFromUser = false,
                         ),
                         isLoading = false,

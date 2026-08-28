@@ -9,14 +9,19 @@ class RemoteChatRepository(
 
     override suspend fun getReply(
         message: String,
-    ): String {
+        previousResponseId: String?,
+    ): ChatReply {
         val response = chatApi.sendMessage(
             request = ChatRequest(
                 message = message,
                 petId = "momo",
+                previousResponseId = previousResponseId,
             ),
         )
 
-        return response.reply
+        return ChatReply(
+            text = response.reply,
+            responseId = response.responseId,
+        )
     }
 }

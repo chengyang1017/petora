@@ -4,5 +4,6 @@ interface ChatRepository {
 
     suspend fun getReply(
         message: String,
-    ): String
+        previousResponseId: String?,
+    ): ChatReply
 }

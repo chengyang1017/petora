@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 data class ChatRequest(
     val message: String,
     val petId: String,
+    val previousResponseId: String? = null,
 )

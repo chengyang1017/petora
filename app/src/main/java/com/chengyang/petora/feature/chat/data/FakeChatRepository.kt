@@ -6,13 +6,19 @@ class FakeChatRepository : ChatRepository {
 
     override suspend fun getReply(
         message: String,
-    ): String {
+        previousResponseId: String?,
+    ): ChatReply {
         delay(1000)
 
         if (message == "/error") {
-            throw IllegalStateException("Fake AI request failed")
+            throw IllegalStateException(
+                "Fake AI request failed"
+            )
         }
 
-        return "Woof! You said: $message"
+        return ChatReply(
+            text = "Woof! You said: $message",
+            responseId = null,
+        )
     }
 }
