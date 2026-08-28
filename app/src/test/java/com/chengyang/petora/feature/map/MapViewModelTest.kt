@@ -5,7 +5,9 @@ import com.chengyang.petora.feature.map.data.PlaceRepository
 import com.chengyang.petora.feature.map.data.PlaceSearchResult
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -102,6 +104,43 @@ class MapViewModelTest {
             repository.requestCount,
         )
     }
+
+    @Test
+    fun `search waits for debounce and only searches latest query`() = runTest {
+        val repository = FakePlaceRepository(
+            placeName = null,
+        )
+
+        val viewModel = MapViewModel(
+            placeRepository = repository,
+        )
+
+        viewModel.onSearchQueryChanged(
+            "Pet",
+        )
+
+        advanceTimeBy(300)
+
+        viewModel.onSearchQueryChanged(
+            "Petronas",
+        )
+
+        advanceTimeBy(499)
+        runCurrent()
+
+        assertEquals(
+            emptyList<String>(),
+            repository.searchQueries,
+        )
+
+        advanceTimeBy(1)
+        advanceUntilIdle()
+
+        assertEquals(
+            listOf("Petronas"),
+            repository.searchQueries,
+        )
+    }
 }
 
 private class FakePlaceRepository(
@@ -110,6 +149,9 @@ private class FakePlaceRepository(
 
     var requestCount = 0
         private set
+
+    val searchQueries =
+        mutableListOf<String>()
 
     override suspend fun getPlaceName(
         location: LatLng,
@@ -122,6 +164,8 @@ private class FakePlaceRepository(
     override suspend fun searchPlaces(
         query: String,
     ): List<PlaceSearchResult> {
+        searchQueries += query
+
         return emptyList()
     }
 }
