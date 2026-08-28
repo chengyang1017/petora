@@ -16,6 +16,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,11 +27,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.chengyang.petora.core.places.PetoraPlaces
 import com.chengyang.petora.feature.chat.PlaceContext
 import com.chengyang.petora.feature.map.data.GooglePlaceRepository
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
+import kotlinx.coroutines.launch
 
 @Composable
 fun MapScreen(
@@ -53,6 +56,8 @@ fun MapScreen(
     )
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val coroutineScope = rememberCoroutineScope()
 
     val cameraPositionState =
         rememberCameraPositionState {
@@ -172,6 +177,16 @@ fun MapScreen(
                                     viewModel.selectSearchResult(
                                         result = result,
                                     )
+
+                                    coroutineScope.launch {
+                                        cameraPositionState.animate(
+                                            update = CameraUpdateFactory.newLatLngZoom(
+                                                result.location,
+                                                16f,
+                                            ),
+                                            durationMs = 800,
+                                        )
+                                    }
                                 },
                                 modifier = Modifier.fillMaxWidth(),
                             ) {
