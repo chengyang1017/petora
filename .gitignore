@@ -18,3 +18,5 @@ local.properties
 server/node_modules/
 server/dist/
 server/.env
+
+secrets.properties
