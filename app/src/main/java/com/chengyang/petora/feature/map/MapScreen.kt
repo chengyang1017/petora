@@ -2,19 +2,24 @@ package com.chengyang.petora.feature.map
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -92,17 +97,93 @@ fun MapScreen(
                 .align(Alignment.TopCenter)
                 .padding(16.dp),
         ) {
-            OutlinedTextField(
-                value = state.searchQuery,
-                onValueChange = viewModel::onSearchQueryChanged,
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = {
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                OutlinedTextField(
+                    value = state.searchQuery,
+                    onValueChange = viewModel::onSearchQueryChanged,
+                    modifier = Modifier.weight(1f),
+                    placeholder = {
+                        Text(
+                            text = "Search places...",
+                        )
+                    },
+                    singleLine = true,
+                    enabled = !state.isSearching,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Search,
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onSearch = {
+                            viewModel.searchPlaces()
+                        },
+                    ),
+                )
+
+                Button(
+                    onClick = viewModel::searchPlaces,
+                    enabled =
+                        state.searchQuery.isNotBlank() &&
+                                !state.isSearching,
+                    modifier = Modifier.padding(start = 8.dp),
+                ) {
                     Text(
-                        text = "Search places...",
+                        text = if (state.isSearching) {
+                            "..."
+                        } else {
+                            "Search"
+                        },
                     )
-                },
-                singleLine = true,
-            )
+                }
+            }
+
+            if (state.isSearching) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                ) {
+                    Text(
+                        text = "Searching places...",
+                        modifier = Modifier.padding(12.dp),
+                    )
+                }
+            }
+
+            if (
+                state.searchResults.isNotEmpty() &&
+                !state.isSearching
+            ) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                ) {
+                    Column(
+                        modifier = Modifier.padding(
+                            vertical = 4.dp,
+                        ),
+                    ) {
+                        state.searchResults.forEach { result ->
+                            TextButton(
+                                onClick = {
+                                    viewModel.selectSearchResult(
+                                        result = result,
+                                    )
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Text(
+                                    text = result.name,
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                            }
+                        }
+                    }
+                }
+            }
 
             Card(
                 modifier = Modifier

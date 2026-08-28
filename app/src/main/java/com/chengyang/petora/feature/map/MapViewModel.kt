@@ -3,6 +3,7 @@ package com.chengyang.petora.feature.map
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chengyang.petora.feature.map.data.PlaceRepository
+import com.chengyang.petora.feature.map.data.PlaceSearchResult
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +27,67 @@ class MapViewModel(
         _uiState.update { currentState ->
             currentState.copy(
                 searchQuery = value,
+            )
+        }
+    }
+
+    fun searchPlaces() {
+        val query = _uiState.value.searchQuery.trim()
+
+        if (query.isEmpty()) {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    searchResults = emptyList(),
+                    isSearching = false,
+                )
+            }
+
+            return
+        }
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                isSearching = true,
+                searchResults = emptyList(),
+            )
+        }
+
+        viewModelScope.launch {
+            try {
+                val results = placeRepository.searchPlaces(
+                    query = query,
+                )
+
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        searchResults = results,
+                        isSearching = false,
+                    )
+                }
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (exception: Exception) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        searchResults = emptyList(),
+                        isSearching = false,
+                    )
+                }
+            }
+        }
+    }
+
+    fun selectSearchResult(
+        result: PlaceSearchResult,
+    ) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                selectedLocation = result.location,
+                selectedPlaceName = result.name,
+                searchQuery = "",
+                searchResults = emptyList(),
+                isSearching = false,
+                isLoadingPlace = false,
             )
         }
     }
