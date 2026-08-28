@@ -33,6 +33,7 @@ class MapViewModel(
         _uiState.update { currentState ->
             currentState.copy(
                 searchQuery = value,
+                hasSearchCompleted = false,
             )
         }
 
@@ -48,6 +49,7 @@ class MapViewModel(
                 currentState.copy(
                     searchResults = emptyList(),
                     isSearching = false,
+                    hasSearchCompleted = false,
                 )
             }
 
@@ -77,6 +79,7 @@ class MapViewModel(
                 currentState.copy(
                     searchResults = emptyList(),
                     isSearching = false,
+                    hasSearchCompleted = false,
                 )
             }
 
@@ -99,6 +102,7 @@ class MapViewModel(
             currentState.copy(
                 isSearching = true,
                 searchResults = emptyList(),
+                hasSearchCompleted = false,
             )
         }
 
@@ -115,6 +119,7 @@ class MapViewModel(
                 currentState.copy(
                     searchResults = results,
                     isSearching = false,
+                    hasSearchCompleted = true,
                 )
             }
         } catch (exception: CancellationException) {
@@ -128,6 +133,7 @@ class MapViewModel(
                 currentState.copy(
                     searchResults = emptyList(),
                     isSearching = false,
+                    hasSearchCompleted = true,
                 )
             }
         }
@@ -147,6 +153,7 @@ class MapViewModel(
                 searchQuery = "",
                 searchResults = emptyList(),
                 isSearching = false,
+                hasSearchCompleted = false,
                 isLoadingPlace = false,
             )
         }

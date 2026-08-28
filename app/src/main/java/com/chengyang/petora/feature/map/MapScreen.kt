@@ -200,6 +200,23 @@ fun MapScreen(
                 }
             }
 
+            if (
+                state.hasSearchCompleted &&
+                state.searchResults.isEmpty() &&
+                !state.isSearching
+            ) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                ) {
+                    Text(
+                        text = "No places found",
+                        modifier = Modifier.padding(12.dp),
+                    )
+                }
+            }
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
